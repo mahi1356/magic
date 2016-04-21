@@ -1,15 +1,15 @@
 import openpyxl
 import os
 
-os.chdir('/home/robert/Python/Magic/')
- 
 class CardCollection:
    
     # Class variables
     # self.collectionFile - This is the name for the excel spreadsheet
     
     def __init__(self,collectionFile):
-        os.chdir('/home/robert/Python/Magic/')
+        #os.chdir('/home/robert/Python/Magic/')
+        os.chdir('/Users/mity/mypy')
+        
         self.collectionFile = collectionFile
         self.sourceWorkbook = openpyxl.load_workbook(collectionFile)
         
@@ -18,7 +18,7 @@ class CardCollection:
     
     def getNumRows(self):
         return 324
-    
+
     def getSheetname(self,sheetIndex):
         return 'ZEN'
     
@@ -29,22 +29,31 @@ class CardCollection:
 
         return cardName
     
-    def getCardInfo(self,sheetIndex,rowIndex):
-        cardInfo = []
-        cardInfo.append('Bala Ged Thief')
-        cardInfo.append(' ')
-        cardInfo.append(' ')
-        cardInfo.append(1)
+    def getAllCardInfo(self,sheetIndex,rowIndex):
+        # I want to use dictionary
+        cardInfo = {}
+        cardInfo.append{'Card' :'Bala Ged Thief'}
+        # read about dictionary then add items to dictionary 
+        cardInfo.append(['Color' : 'B'])
+        cardInfo.append(['Rarity' :' Rare'])
+        cardInfo.append(['Foil' : 'No'])
         return cardInfo
     
+    def getCardPrice(self):
+        return '2.00'
+    
+    def saveCardInfo(self):
+        return TRUE
+
 # Card Collection Test Suite  
-os.chdir('/home/robert/Python/Magic/')
+
 oCC = CardCollection('MTG_Collection_4_20_16.xlsx')
+
 numSheets = oCC.getNumSheets()
 numRows = oCC.getNumRows()
 sheetName = oCC.getSheetname(47)
 cardName = oCC.getCardname(47,1)
-cardInfo = oCC.getCardInfo(47,1)
+cardInfo = oCC.getAllCardInfo(47,1)
 
 
 print(numSheets)
@@ -72,11 +81,11 @@ if cardName == "Bala Ged Thief":
     print("cardName Check = TRUE")
 else:
     print("cardName Check = FALSE")
-# Mitra - Write test for cardInfo - should return columns Card, Color, Rarity, Foil, Special, Number and Location from 
-#         spreadsheet
+# Mitra - Write test for cardInfo - should return columns Card, Color, Rarity, Foil, 
+#Special, Number and Location from   spreadsheet
 
 cardName = oCC.getCardname(47,5)
-cardInfo = oCC.getCardInfo(47,5)
+cardInfo = oCC.getAllCardInfo(47,5)
 
 print(cardName)
 if cardName == "Bloodchief Ascension":
