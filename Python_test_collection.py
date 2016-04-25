@@ -3,7 +3,7 @@ import openpyxl
 import xlrd
 import os
 
-
+os.chdir('/Users/mity/mypy')
 #os.chdir('/home/robert/Python/Magic/')
 
 # Open Collection by creating a CardCollection object (oCC)
@@ -23,32 +23,23 @@ import os
         # Send summaryLine to the OutputFile object
 # Save final summary fileimport openpyxl
 
-    
 class CardCollection:
-   
-    # self.collectionFile - excel file name
-    os.chdir('/home/robert/Python/Magic/') # delete when member variable self.workingDir created
-#    os.chdir('/Users/mity/mypy')
+
     def __init__(self,collectionFile):
-        #swap os.chdir when you want to run on yours
-        os.chdir('/home/robert/Python/Magic/')
-        #os.chdir('/Users/mity/mypy')
-        
-        # Mitra to create member variable self.workingDir to hold directory to use
-        # Could either ask who's running the program
-        
-        # Mitra also to create member variable self.collection to hold filename and set it here
+  
+    # Mitra to create member variable self.workingDir to hold directory to use
+    # Could either ask who's running the program
+    # Mitra also to create member variable self.collection to hold filename and set it here
         self.collectionFile = collectionFile
         self.sourceWorkbook = openpyxl.load_workbook(collectionFile)
-        
+
     def getNumSheets(self):
-        os.chdir('/home/robert/Python/Magic/') # delete when member variable self.workingDir created
-#        os.chdir('/Users/mity/mypy')
-        book = xlrd.open_workbook('MTG_Collection_4_20_16.xlsx') # delete when member variable self.collection created
+       
+        book = xlrd.open_workbook('MTG_Collection_4_20_16.xlsx') 
+        # delete when member variable self.collection created
         numb_sheets=book.nsheets
         return numb_sheets
 
-    
     def getNumRows(self, sheetIndex):
         return 324
 
@@ -59,7 +50,6 @@ class CardCollection:
         sourceSheetName = 'ZEN'
         sourceSheet = self.sourceWorkbook.get_sheet_by_name(sourceSheetName)
         cardName = sourceSheet.cell(row = rowIndex+1,column=2).value
-
         return cardName
     
     def getAllCardInfo(self,sheetIndex,rowIndex):
@@ -99,10 +89,11 @@ print('The CARD NAME is:',cardName)
 print('The list of all required information is:', cardInfo)
 
 
-if numSheets == 67:
+if numSheets == 69:
     print("numSheets Check = TRUE")
 else:
     print("numSheets Check = FALSE")
+    ###print("It should be"+ numSheets.numb_sheets)
     
 if numRows == 324:
     print("numRows Check = TRUE")
