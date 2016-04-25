@@ -1,22 +1,55 @@
+# Main program
 import openpyxl
+import xlrd
 import os
 
+
+#os.chdir('/home/robert/Python/Magic/')
+
+# Open Collection by creating a CardCollection object (oCC)
+# Find number of sheets
+
+# Loop through all sheets (using number of sheets)
+#for sheetIndex=0 to numSheets
+    # Get name of the current sheet
+    # Open web page to scrape the data from (by creating a MTG_Webpage object)
+    # Get number of rows of current sheet
+    # Loop through all rows on current sheet
+        # Get cardInfo line from oCC
+        # Get card name for current row
+        # Go to web site and get the price
+        # price = oWebPage.getCardPrice(cardName)
+        # Append price to cardInfo line to create summaryLine for outputfile
+        # Send summaryLine to the OutputFile object
+# Save final summary fileimport openpyxl
+
+    
 class CardCollection:
    
-    # Class variables
-    # self.collectionFile - This is the name for the excel spreadsheet
-    
+    # self.collectionFile - excel file name
+    os.chdir('/home/robert/Python/Magic/') # delete when member variable self.workingDir created
+#    os.chdir('/Users/mity/mypy')
     def __init__(self,collectionFile):
-        #os.chdir('/home/robert/Python/Magic/')
-        os.chdir('/Users/mity/mypy')
+        #swap os.chdir when you want to run on yours
+        os.chdir('/home/robert/Python/Magic/')
+        #os.chdir('/Users/mity/mypy')
         
+        # Mitra to create member variable self.workingDir to hold directory to use
+        # Could either ask who's running the program
+        
+        # Mitra also to create member variable self.collection to hold filename and set it here
         self.collectionFile = collectionFile
         self.sourceWorkbook = openpyxl.load_workbook(collectionFile)
         
     def getNumSheets(self):
-        return 67
+        os.chdir('/home/robert/Python/Magic/') # delete when member variable self.workingDir created
+#        os.chdir('/Users/mity/mypy')
+        book = xlrd.open_workbook('MTG_Collection_4_20_16.xlsx') # delete when member variable self.collection created
+        numb_sheets=book.nsheets
+        return numb_sheets
+
     
-    def getNumRows(self):
+    def getNumRows(self, sheetIndex):
         return 324
 
     def getSheetname(self,sheetIndex):
@@ -30,13 +63,16 @@ class CardCollection:
         return cardName
     
     def getAllCardInfo(self,sheetIndex,rowIndex):
-        # I want to use dictionary
-        cardInfo = {}
-        cardInfo.append{'Card' :'Bala Ged Thief'}
-        # read about dictionary then add items to dictionary 
-        cardInfo.append(['Color' : 'B'])
-        cardInfo.append(['Rarity' :' Rare'])
-        cardInfo.append(['Foil' : 'No'])
+    
+        cardInfo = []
+        cardInfo.append('Bala Ged Thief')
+        cardInfo.append('B')
+        cardInfo.append('Rare')
+        cardInfo.append('N')
+        cardInfo.append('N')
+        cardInfo.append('1')
+        cardInfo.append('Zendikar - Storage Box')
+      
         return cardInfo
     
     def getCardPrice(self):
@@ -50,17 +86,18 @@ class CardCollection:
 oCC = CardCollection('MTG_Collection_4_20_16.xlsx')
 
 numSheets = oCC.getNumSheets()
-numRows = oCC.getNumRows()
+numRows = oCC.getNumRows(47)
 sheetName = oCC.getSheetname(47)
 cardName = oCC.getCardname(47,1)
 cardInfo = oCC.getAllCardInfo(47,1)
 
 
-print(numSheets)
-print(numRows)
-print(sheetName)
-print(cardName)
-print(cardInfo)
+print('Total number of SHEETS in this file is:', numSheets)
+print('Total number of ROWS in this sheet is:',numRows)
+print('The SHEET NAME found is:',sheetName)
+print('The CARD NAME is:',cardName)
+print('The list of all required information is:', cardInfo)
+
 
 if numSheets == 67:
     print("numSheets Check = TRUE")
@@ -81,14 +118,46 @@ if cardName == "Bala Ged Thief":
     print("cardName Check = TRUE")
 else:
     print("cardName Check = FALSE")
-# Mitra - Write test for cardInfo - should return columns Card, Color, Rarity, Foil, 
-#Special, Number and Location from   spreadsheet
 
+if cardInfo[0] == 'Bala Ged Thief':
+    print("Cardname Check from list = TRUE")
+else:
+    print("Cardname Check from list = FALSE")
+
+if cardInfo[1] == 'B':
+     print("Color Check from list = TRUE")
+else:
+     print("Color Check from list = FALSE") 
+
+if cardInfo[2] == 'Rare':
+    print("Rarity Check from list= TRUE")
+else:
+    print("Rarity Check from list=  FALSE")
+
+if cardInfo[3] == 'N':   
+    print("Foil Check from list = TRUE")
+else:
+    print("Foil Check from list = FALSE")
+
+if cardInfo[4] == 'N':   
+    print("Special Check from list = TRUE")
+else:
+    print("Special Check from list = FALSE")
+
+if cardInfo[5] == '1':  
+    print("Number Check from list = TRUE")
+else:
+    print("Number from list = FALSE")
+
+if cardInfo[6] == 'Zendikar - Storage Box':   
+    print("Location Check from list = TRUE")
+else:
+    print("Location Check from list = FALSE")
 cardName = oCC.getCardname(47,5)
 cardInfo = oCC.getAllCardInfo(47,5)
 
 print(cardName)
 if cardName == "Bloodchief Ascension":
-    print("Foil cardname Check = TRUE")
+    print("cardname Check = TRUE")
 else:
-    print("Foil cardname Check = FALSE")
+    print("cardname Check = FALSE")
