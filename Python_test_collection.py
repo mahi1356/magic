@@ -1,20 +1,8 @@
-# Main program
 import openpyxl
 import xlrd
 import xlsxwriter 
-# Loop through all sheets (using number of sheets)
-#for sheetIndex=0 to numSheets
-    # Get name of the current sheet
-    # Open web page to scrape the data from (by creating a MTG_Webpage object)
-    # Get number of rows of current sheet
-    # Loop through all rows on current sheet
-        # Get cardInfo line from oCC
-        # Get card name for current row
-        # Go to web site and get the price
-        # price = oWebPage.getCardPrice(cardName)
-        # Append price to cardInfo line to create summaryLine for outputfile
-        # Send summaryLine to the OutputFile object
-# Save final summary fileimport openpyxl
+
+##################################################################################################################
 
 class CardCollection:
 
@@ -65,9 +53,6 @@ class CardCollection:
         cardInfo.append('Zendikar - Storage Box')
         return cardInfo
     
-    def getCardPrice(self):
-        return '2.00'
-    
     def saveCardInfo(self):
 
     	# create a new workbook-only once
@@ -76,9 +61,6 @@ class CardCollection:
         # add one sheet and assign a name-only once
         new_sheet = new_workbook.add_worksheet('NewZen')
         
-        # for j in range(0,8):
-        #     header_sheet= new_sheet.write (0,j, 'Card name')
-        #     j += 1
         i = 0
 
         # adding header -only once
@@ -87,23 +69,120 @@ class CardCollection:
             i += 1
         
         new_workbook.close()
-   
+        print('Card saved to new excel file')
+
+    def setHeader(self):
+        header_list = ['Card name','Color','Rarity','Foil', 'Number','Special','Location','Price']
+        
+        open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        open_sheet = open_workbook.get_sheet_by_name('NewZen')
+
+        for item in range(len(header_list)):
+             = open_sheet.append([header_list[item]])
+            open_workbook.save('final_magic.xlsx') 
+        
+#             for i in range(row):
+#    ws_write.append([datalist[i]])
+# wb.save(filename='data.xlsx')
+        print('finished setting first row, once for all')
+
+
+###################################################################################################################
+from lxml import html
+import requests
+
+class WebScraperMTG:
+    
+    # Private members
+    # self.webpage
+    # self.card_list
+    # self.price_list
+    
+    # Private methods
+    # setInformationLists()
+    
+    # Public methods
+    # __init__(webpage)
+    # getWebInformationList(cardname) - returns a list
+    
+    def __init__(self,webpage):
+  
+        self.webpage = webpage
+        self.price_list = []
+        self.card_list = []
+        self.setInformationLists() 
+        
+    def setInformationLists(self):
+
+        page = requests.get(self.webpage)
+        tree = html.fromstring(page.content)
+        
+        card_list = tree.xpath('//a[@data-full-image]/text()')
+
+        size = int(len(card_list) / 2)
+        self.card_list = card_list[0:size]
+        print(self.card_list)
+        
+        price_list = tree.xpath('//td[@class="text-right"]/text()')
+
+        price_list = [x for x in price_list if x != '\n']
+        size = int(len(price_list)/2)
+        self.price_list = []
+        for i in range(0,size,3):
+            value = price_list[i]
+            value = value[1:-1]
+            self.price_list.append(value)
+    
+#        self.daily_change_list = []
+#        for j in range(1,size,3):
+#            value = price_list[j]
+#            value = value[1:-1]
+#            self.daily_change_list.append(value)
+#        newSize = int(len(self.daily_change_list))
+#        self.daily_change_list = self.daily_change_list[0:newSize]
+#        print(newSize)
+#        print(self.daily_change_list)      
+        
+#        self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1]
+#        self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
+#        self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
+
+    def getWebInformationList(self,cardname):
+        # Loop through self.card_list until you find the element that matches cardname
+        # Get value of self.price_list at same element number
+        
+    def getWebPriceList(self):
+        return self.price_list
+
+###################################################################################################################
+
+class CardSummary:
+    # Creates output file (create the correct header columns)
+    # Writes each merged combined line from card collection and web page to output file
+    # Saves output file
+
+
+###################################################################################################################
 
 # Card Collection Test Suite  
-oCC = CardCollection('MTG_Collection_4_20_16.xlsx')
+oCC = CardCollection('/home/robert/Python/Magic/MTG_Collection_4_20_16.xlsx')
 numSheets = oCC.getNumSheets()
 numRows = oCC.getNumRows(46)
 sheetName = oCC.getSheetname(46)
 cardName = oCC.getCardname(46,1)
 cardInfo = oCC.getAllCardInfo(46,1)
-output_file = oCC.saveCardInfo()
+#output_file = oCC.saveCardInfo()
+
+oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
+priceList = oWS.getWebPriceList()
+
+print("Price List from object: ", priceList)
 
 print('Total number of SHEETS in this file is:', numSheets)
 print('Total number of ROWS in this sheet is:',numRows)
 print('The SHEET NAME found is:',sheetName)
 print('The CARD NAME is:',cardName)
 print('The list of all required information is:', cardInfo)
-print('Card saved to new excel file')
 
 # if numSheets == 67:
 #     print("numSheets Check = TRUE")
