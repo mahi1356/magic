@@ -44,7 +44,8 @@ class CardCollection:
     def getAllCardInfo(self,sheetIndex,rowIndex):
          # mitra to finish this section 
         cardInfo = []
-        cardInfo.append('Bala Ged Thief')
+        #cardInfo.append('Bala Ged Thief')
+        cardInfo.append()
         cardInfo.append('B')
         cardInfo.append('Rare')
         cardInfo.append('N')
@@ -53,7 +54,7 @@ class CardCollection:
         cardInfo.append('Zendikar - Storage Box')
         return cardInfo
     
-    def saveCardInfo(self):
+    def saveCardInfo(self):  # transfer this to CardSummary class and adjust it
 
     	# create a new workbook-only once
         # if final_magic sheet does not exist create one: 
@@ -71,21 +72,7 @@ class CardCollection:
         new_workbook.close()
         print('Card saved to new excel file')
 
-    def setHeader(self):
-        header_list = ['Card name','Color','Rarity','Foil', 'Number','Special','Location','Price']
-        
-        open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        open_sheet = open_workbook.get_sheet_by_name('NewZen')
-
-        for item in range(len(header_list)):
-             = open_sheet.append([header_list[item]])
-            open_workbook.save('final_magic.xlsx') 
-        
-#             for i in range(row):
-#    ws_write.append([datalist[i]])
-# wb.save(filename='data.xlsx')
-        print('finished setting first row, once for all')
-
+    
 
 ###################################################################################################################
 from lxml import html
@@ -148,18 +135,40 @@ class WebScraperMTG:
 #        self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
 
     def getWebInformationList(self,cardname):
-        # Loop through self.card_list until you find the element that matches cardname
+        # Loop through self.card_list until you find the element that matches cardname  -while loop index
         # Get value of self.price_list at same element number
         
-    def getWebPriceList(self):
-        return self.price_list
+    #def getWebPriceList(self):
+     #   return self.price_list
 
 ###################################################################################################################
 
 class CardSummary:
     # Creates output file (create the correct header columns)
+    
+    def __init__(self):
+    	self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        self.setHeader() 
+        self.currentrow = 1   # verify row starts at 0
+        self.currentsheet = self.open_workbook.activesheet # find correct syntax for active sheet
+
+    def setHeader(self):
+        header_list = ['Card name','Color','Rarity','Foil', 'Number','Special','Location','Price']
+        #open_sheet = self.open_workbook.get_sheet_by_name(
+        # if first sheet is included in new workbook, write there
+        for item in range(len(header_list)):
+            currentsheet.append([header_list[item]])
+            open_workbook.save('final_magic.xlsx') 
+        # search for faster way of writting list items all at once ...
+        print('finished setting first row, once for all')
+
     # Writes each merged combined line from card collection and web page to output file
     # Saves output file
+    def writeSummaryRow(self):
+    	# rowindex+1  , culomn =0 ?
+    	# read from summary list from first item (loop through) 
+        self.currentrow += 1
+
 
 
 ###################################################################################################################
