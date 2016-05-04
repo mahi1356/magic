@@ -8,14 +8,14 @@ class CardCollection:
 
     def __init__(self,collectionFile):
   
-    # Mitra to create member variable self.workingDir to hold directory to use
-    # Could either ask who's running the program
-    # Mitra also to create member variable self.collection to hold filename and set it here
+    # Mitra to create member variable self.workingDir to hold directory to use Could either ask who's running the program
+    # Mitra also to create member variable self.collection to hold filename and set it here----> is this done? priority?
+    # is this something worth doing? priority is low 
         self.collectionFile = collectionFile
         self.sourceWorkbook = xlrd.open_workbook(self.collectionFile) 
 
     def getNumSheets(self):
-        # delete when member variable self.collection created
+        # delete when member variable self.collection created 
         numb_sheets = self.sourceWorkbook.nsheets
         return numb_sheets
 
@@ -24,12 +24,12 @@ class CardCollection:
         numb_rows = sheet_dest.nrows - 1
         return numb_rows
 
-    def getSheetname(self,sheetIndex):
+    def getSheetName(self,sheetIndex):
         sh_names_list= self.sourceWorkbook.sheet_names()
         sh_name = sh_names_list[sheetIndex]
         return sh_name
     
-    def getCardname(self,sheetIndex,rowIndex):
+    def getCardName(self,sheetIndex,rowIndex):
      
         # below will get a list of sheets  using sheet_by_name  
         #sh_names= self.sourceWorkbook.sheet_names()
@@ -54,23 +54,7 @@ class CardCollection:
         cardInfo.append('Zendikar - Storage Box')
         return cardInfo
     
-    def saveCardInfo(self):  # transfer this to CardSummary class and adjust it
-
-    	# create a new workbook-only once
-        # if final_magic sheet does not exist create one: 
-        new_workbook = xlsxwriter.Workbook('final_magic.xlsx')
-        # add one sheet and assign a name-only once
-        new_sheet = new_workbook.add_worksheet('NewZen')
-        
-        i = 0
-
-        # adding header -only once
-        for item in cardInfo:
-            xwrite = new_sheet.write(1,i,cardInfo[i])
-            i += 1
-        
-        new_workbook.close()
-        print('Card saved to new excel file')
+    
 
     
 
@@ -169,7 +153,22 @@ class CardSummary:
     	# read from summary list from first item (loop through) 
         self.currentrow += 1
 
+    def saveCardInfo(self):  # transfer this to CardSummary class and adjust it
 
+    	# create a new workbook-only once
+        # if final_magic sheet does not exist create one: 
+        new_workbook = xlsxwriter.Workbook('final_magic.xlsx')
+        # add one sheet and assign a name-only once
+        new_sheet = new_workbook.add_worksheet('NewZen')
+        
+        i = 0
+
+        # adding header -only once
+        for item in cardInfo:
+            xwrite = new_sheet.write(1,i,cardInfo[i])
+            i += 1
+        new_workbook.close()
+        print('Card saved to new excel file')
 
 ###################################################################################################################
 
