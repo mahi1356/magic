@@ -48,7 +48,7 @@ class CardCollection:
         my_sheet = self.sourceWorkbook.sheet_by_index(sheetIndex)
         #this  gets 5 sequential items 
         for col in range(2,7):
-        	# xxx find a way to convert number to string 1.0 to 1
+        	# XXXX find a way to convert number to string 1.0 to 1
             cardInfo.append(my_sheet.cell(rowIndex,col).value)
         # gets location
         cardInfo.append(my_sheet.cell(rowIndex,11).value)
@@ -121,16 +121,18 @@ class CardSummary:
     #def __init__(self):
        
     def setHeader(self):
-        self.currentrow = 0 
+        #self.currentrow = 0 
         header_list = ['Card name','Color','Rarity','Foil','Special','Number','Location','Price']
         self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
         self.currentsheet = self.open_workbook.active 
         # if first sheet is included in new workbook, write there
-        for item in range(7):
-            self.currentsheet.append([header_list[item]])
-            self.open_workbook.save('final_magic.xlsx') 
-     
-        print('finished setting first row, once for all')
+        c = 1
+        # item is an actual value of the element inside the list and NOT a pointercol =  - lesson learned from how loop work for lists
+        for item in header_list:
+            self.currentsheet.cell(row=1,column=c).value = item
+            c += 1
+        self.open_workbook.save('final_magic.xlsx') 
+        
 
     # Writes each merged combined line from card collection and web page to output file
     # Saves output file
