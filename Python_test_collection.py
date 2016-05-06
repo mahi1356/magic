@@ -5,9 +5,6 @@ import lxml
 from lxml import html
 import requests
 
-
-##################################################################################################################
-
 class CardCollection:
 
     def __init__(self,collectionFile):
@@ -43,8 +40,6 @@ class CardCollection:
        
         cardInfo = []
         cardInfo.append(self.getCardName(sheetIndex,rowIndex))
-        #print ('list of card info under getAllCardinfo: ', cardInfo)
-        
         my_sheet = self.sourceWorkbook.sheet_by_index(sheetIndex)
         #this  gets 5 sequential items 
         for col in range(2,7):
@@ -52,7 +47,6 @@ class CardCollection:
             cardInfo.append(my_sheet.cell(rowIndex,col).value)
         # gets location
         cardInfo.append(my_sheet.cell(rowIndex,11).value)
-        #print(cardInfo)
         return cardInfo
       
 class WebScraperMTG:
@@ -121,11 +115,10 @@ class CardSummary:
     #def __init__(self):
        
     def setHeader(self):
-        #self.currentrow = 0 
+
         header_list = ['Card name','Color','Rarity','Foil','Special','Number','Location','Price']
         self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
         self.currentsheet = self.open_workbook.active 
-        # if first sheet is included in new workbook, write there
         c = 1
         # item is an actual value of the element inside the list and NOT a pointercol =  - lesson learned from how loop work for lists
         for item in header_list:
@@ -133,55 +126,65 @@ class CardSummary:
             c += 1
         self.open_workbook.save('final_magic.xlsx') 
         
+    def writeSummaryRow(self,RowList):
+    
+        self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        self.currentsheet = self.open_workbook.active
+        c = 1
+        for item in RowList:
+            self.currentsheet.cell(row=2,column=c).value = item
+            c += 1
+        self.open_workbook.save('final_magic.xlsx') 
+       
 
-    # Writes each merged combined line from card collection and web page to output file
-    # Saves output file
-    def writeSummaryRow(self):
-    	# rowindex+1  , culomn =0 ?
-    	# read from summary list from first item (loop through) 
-        self.currentrow += 1
-
-    def saveCardInfo(self):  # transfer this to CardSummary class and adjust it
-
-    	# create a new workbook-only once
-        # if final_magic sheet does not exist create one: 
-        new_workbook = xlsxwriter.Workbook('final_magic.xlsx')
+    #def saveCardInfo(self): #needs to be adjusted
+       
+        #new_workbook = xlsxwriter.Workbook('final_magic.xlsx')
         # add one sheet and assign a name-only once
-        new_sheet = new_workbook.add_worksheet('NewZen')
+        #new_sheet = new_workbook.add_worksheet('NewZen')
         
-        i = 0
+        #i = 0
 
-        # adding header -only once
-        for item in cardInfo:
-            xwrite = new_sheet.write(1,i,cardInfo[i])
-            i += 1
-        new_workbook.close()
-        print('Card saved to new excel file')
-
-###################################################################################################################
+        #for item in cardInfo:
+        #    xwrite = new_sheet.write(1,i,cardInfo[i])
+        #    i += 1
+        #new_workbook.close()
+        #print('Card saved to new excel file')
 
 # Card Collection Test Suite  
 # implement the test suite with nose
 oCC = CardCollection('/Users/mity/mypy/MTG_Collection_4_20_16.xlsx')
+
 numSheets = oCC.getNumSheets()
 numRows = oCC.getNumRows(46)
 sheetName = oCC.getSheetName(46)
 cardName = oCC.getCardName(46,1)
-cardInfo = oCC.getAllCardInfo(46,1)
+
 
 oCS = CardSummary()
-output_file = oCS.setHeader()
+header = oCS.setHeader()
 
+for i in range (1,numRows):
+    cardInfo = oCC.getAllCardInfo(46, i+1)
+    final_row = oCS.writeSummaryRow(cardInfo)
+    
+
+
+
+#webpageInfo = oWS.getWebInformationList(cardName)
+#summaryList = cardInfo + webpageInfo
+#summaryList.append(sheetName)
 #oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
 #priceList = oWS.getWebPriceList()
-
 #print("Price List from object: ", priceList)
 
-print('Total number of SHEETS in this file is:', numSheets)
-print('Total number of ROWS in this sheet is:',numRows)
-print('The SHEET NAME found is:',sheetName)
+print('Total number of SHEETS in this file is: ', numSheets)
+print('Total number of ROWS in this sheet is: ',numRows)
+print('The SHEET NAME found is: ',sheetName)
 print('The CARD NAME is:',cardName)
-print('The list of all required information is:', cardInfo)
+print('The list of all required information is: ', cardInfo)
+print('This is the header: ', header)
+
 
 # if numSheets == 67:
 #     print("numSheets Check = TRUE")

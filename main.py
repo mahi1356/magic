@@ -1,7 +1,7 @@
 # Main program
 
 oCC = CardCollection('/home/robert/Python/Magic/MTG_Collection_4_20_16.xlsx')
-oSummary = CardSummary('final_magic.xlsx')
+oCS = CardSummary('final_magic.xlsx')
 numSheets = oCC.getNumSheets()
 # this is a correct syntax but the current functionality is not 
 # advance enough to use this loop--->for sheetIndex in range (numSheets-1):
@@ -19,7 +19,7 @@ for rowIndex in range(numRows-1):
     webpageInfo = oWS.getWebInformationList(cardName)
     summaryList = cardInfo + webpageInfo
     summaryList.append(sheetName)
-    oSummary.writeSummaryRow(summaryList)
+    oCS.writeSummaryRow(summaryList)
 # is it better to have savefile in main or inside card summary- why?
 
 oSummary.saveFile()
