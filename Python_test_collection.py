@@ -1,6 +1,10 @@
 import openpyxl
 import xlrd
 import xlsxwriter 
+import lxml
+from lxml import html
+import requests
+
 
 ##################################################################################################################
 
@@ -8,12 +12,12 @@ class CardCollection:
 
     def __init__(self,collectionFile):
   
-    # Mitra to create member variable self.workingDir to hold directory to use Could either ask who's running the program
-    # Mitra also to create member variable self.collection to hold filename and set it here----> is this done? priority?
+    #  create member variable self.workingDir to hold directory to use Could either ask who's running the program
+    #  create member variable self.collection to hold filename and set it here----> is this done? priority?
     # is this something worth doing? priority is low 
         self.collectionFile = collectionFile
         self.sourceWorkbook = xlrd.open_workbook(self.collectionFile) 
-
+        
     def getNumSheets(self):
         # delete when member variable self.collection created 
         numb_sheets = self.sourceWorkbook.nsheets
@@ -30,38 +34,27 @@ class CardCollection:
         return sh_name
     
     def getCardName(self,sheetIndex,rowIndex):
-     
-        # below will get a list of sheets  using sheet_by_name  
-        #sh_names= self.sourceWorkbook.sheet_names()
-        #my_sheet = self.sourceWorkbook.sheet_by_name(sh_names[rowIndex])
-       
-        #below is shorter than above and more clear
+        
         my_sheet = self.sourceWorkbook.sheet_by_index(sheetIndex)
-        my_cell = my_sheet.cell(rowIndex,1).value
-        #Mitra noticed that return variable could be different than what is name in main program
-        return my_cell
+        my_cardname = my_sheet.cell(rowIndex,1).value
+        return my_cardname
     
     def getAllCardInfo(self,sheetIndex,rowIndex):
-         # mitra to finish this section 
+       
         cardInfo = []
-        #cardInfo.append('Bala Ged Thief')
-        cardInfo.append()
-        cardInfo.append('B')
-        cardInfo.append('Rare')
-        cardInfo.append('N')
-        cardInfo.append('N')
-        cardInfo.append('1')
-        cardInfo.append('Zendikar - Storage Box')
+        cardInfo.append(self.getCardName(sheetIndex,rowIndex))
+        #print ('list of card info under getAllCardinfo: ', cardInfo)
+        
+        my_sheet = self.sourceWorkbook.sheet_by_index(sheetIndex)
+        #this  gets 5 sequential items 
+        for col in range(2,7):
+        	# xxx find a way to convert number to string 1.0 to 1
+            cardInfo.append(my_sheet.cell(rowIndex,col).value)
+        # gets location
+        cardInfo.append(my_sheet.cell(rowIndex,11).value)
+        #print(cardInfo)
         return cardInfo
-    
-    
-
-    
-
-###################################################################################################################
-from lxml import html
-import requests
-
+      
 class WebScraperMTG:
     
     # Private members
@@ -86,8 +79,9 @@ class WebScraperMTG:
     def setInformationLists(self):
 
         page = requests.get(self.webpage)
+        #below will pars the contents with lxml
         tree = html.fromstring(page.content)
-        
+        #below will select elements we need-return a list of elements
         card_list = tree.xpath('//a[@data-full-image]/text()')
 
         size = int(len(card_list) / 2)
@@ -104,46 +98,38 @@ class WebScraperMTG:
             value = value[1:-1]
             self.price_list.append(value)
     
-#        self.daily_change_list = []
-#        for j in range(1,size,3):
-#            value = price_list[j]
-#            value = value[1:-1]
-#            self.daily_change_list.append(value)
-#        newSize = int(len(self.daily_change_list))
-#        self.daily_change_list = self.daily_change_list[0:newSize]
-#        print(newSize)
-#        print(self.daily_change_list)      
+     #           self.daily_change_list = []
+     #     for j in range(1,size,3):
+     #               value = price_list[j]
+     #             value = value[1:-1]
+     #      self.daily_change_list.append(value)
+     #    newSize = int(len(self.daily_change_list))
+     #       self.daily_change_list = self.daily_change_list[0:newSize]
+     #      print(newSize)
+     #       print(self.daily_change_list)      
         
-#        self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1]
-#        self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
-#        self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
+     #    self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1]
+     #        self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
+     #    self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
 
-    def getWebInformationList(self,cardname):
-        # Loop through self.card_list until you find the element that matches cardname  -while loop index
-        # Get value of self.price_list at same element number
-        
+    #def getWebInformationList(self,cardname):
     #def getWebPriceList(self):
      #   return self.price_list
 
-###################################################################################################################
-
 class CardSummary:
-    # Creates output file (create the correct header columns)
-    
-    def __init__(self):
-    	self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        self.setHeader() 
-        self.currentrow = 1   # verify row starts at 0
-        self.currentsheet = self.open_workbook.activesheet # find correct syntax for active sheet
 
+    #def __init__(self):
+       
     def setHeader(self):
-        header_list = ['Card name','Color','Rarity','Foil', 'Number','Special','Location','Price']
-        #open_sheet = self.open_workbook.get_sheet_by_name(
+        self.currentrow = 0 
+        header_list = ['Card name','Color','Rarity','Foil','Special','Number','Location','Price']
+        self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        self.currentsheet = self.open_workbook.active 
         # if first sheet is included in new workbook, write there
-        for item in range(len(header_list)):
-            currentsheet.append([header_list[item]])
-            open_workbook.save('final_magic.xlsx') 
-        # search for faster way of writting list items all at once ...
+        for item in range(7):
+            self.currentsheet.append([header_list[item]])
+            self.open_workbook.save('final_magic.xlsx') 
+     
         print('finished setting first row, once for all')
 
     # Writes each merged combined line from card collection and web page to output file
@@ -173,18 +159,21 @@ class CardSummary:
 ###################################################################################################################
 
 # Card Collection Test Suite  
-oCC = CardCollection('/home/robert/Python/Magic/MTG_Collection_4_20_16.xlsx')
+# implement the test suite with nose
+oCC = CardCollection('/Users/mity/mypy/MTG_Collection_4_20_16.xlsx')
 numSheets = oCC.getNumSheets()
 numRows = oCC.getNumRows(46)
-sheetName = oCC.getSheetname(46)
-cardName = oCC.getCardname(46,1)
+sheetName = oCC.getSheetName(46)
+cardName = oCC.getCardName(46,1)
 cardInfo = oCC.getAllCardInfo(46,1)
-#output_file = oCC.saveCardInfo()
 
-oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
-priceList = oWS.getWebPriceList()
+oCS = CardSummary()
+output_file = oCS.setHeader()
 
-print("Price List from object: ", priceList)
+#oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
+#priceList = oWS.getWebPriceList()
+
+#print("Price List from object: ", priceList)
 
 print('Total number of SHEETS in this file is:', numSheets)
 print('Total number of ROWS in this sheet is:',numRows)
