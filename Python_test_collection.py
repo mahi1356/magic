@@ -47,6 +47,7 @@ class CardCollection:
             cardInfo.append(my_sheet.cell(rowIndex,col).value)
         # gets location
         cardInfo.append(my_sheet.cell(rowIndex,11).value)
+        print( 'the list of cardinfo:  ', cardInfo)
         return cardInfo
       
 class WebScraperMTG:
@@ -112,8 +113,10 @@ class WebScraperMTG:
 
 class CardSummary:
 
-    #def __init__(self):
-       
+    def __init__(self):
+        self.currentrow = 1	
+        self.setHeader()
+
     def setHeader(self):
 
         header_list = ['Card name','Color','Rarity','Foil','Special','Number','Location','Price']
@@ -122,21 +125,22 @@ class CardSummary:
         c = 1
         # item is an actual value of the element inside the list and NOT a pointercol =  - lesson learned from how loop work for lists
         for item in header_list:
-            self.currentsheet.cell(row=1,column=c).value = item
+            self.currentsheet.cell(row= self.currentrow,column=c).value = item
             c += 1
         self.open_workbook.save('final_magic.xlsx') 
-        
-    def writeSummaryRow(self,RowList):
-    
+        self.currentrow += 1
+
+    def writeSummaryRow(self,cardInfo ,numRows ):
+        c = 1
         self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
         self.currentsheet = self.open_workbook.active
-        c = 1
-        for item in RowList:
-            self.currentsheet.cell(row=2,column=c).value = item
-            c += 1
-        self.open_workbook.save('final_magic.xlsx') 
-       
 
+        for item in cardInfo:
+            
+            self.currentsheet.cell(row= self.currentrow,column=c).value = item
+            c += 1    
+            self.open_workbook.save('final_magic.xlsx') 
+        self.currentrow += 1
     #def saveCardInfo(self): #needs to be adjusted
        
         #new_workbook = xlsxwriter.Workbook('final_magic.xlsx')
@@ -162,11 +166,12 @@ cardName = oCC.getCardName(46,1)
 
 
 oCS = CardSummary()
-header = oCS.setHeader()
-
-for i in range (1,numRows):
-    cardInfo = oCC.getAllCardInfo(46, i+1)
-    final_row = oCS.writeSummaryRow(cardInfo)
+i = 1
+#oCS.setHeader()
+for i in range (1, numRows):
+    cardInfo = oCC.getAllCardInfo(46, i)
+    oCS.writeSummaryRow(cardInfo,numRows)
+   
     
 
 
@@ -183,7 +188,7 @@ print('Total number of ROWS in this sheet is: ',numRows)
 print('The SHEET NAME found is: ',sheetName)
 print('The CARD NAME is:',cardName)
 print('The list of all required information is: ', cardInfo)
-print('This is the header: ', header)
+
 
 
 # if numSheets == 67:
