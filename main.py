@@ -16,6 +16,8 @@ numRows = oCC.getNumRows(sheetIndex)
 for rowIndex in range(numRows-1):
     cardName = oCC.getCardname(sheetIndex,rowIndex)
     cardInfo = oCC.getAllCardInfo(sheetIndex,rowIndex)
+    
+
     webpageInfo = oWS.getWebInformationList(cardName)
     summaryList = cardInfo + webpageInfo
     summaryList.append(sheetName)

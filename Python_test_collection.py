@@ -52,18 +52,6 @@ class CardCollection:
       
 class WebScraperMTG:
     
-    # Private members
-    # self.webpage
-    # self.card_list
-    # self.price_list
-    
-    # Private methods
-    # setInformationLists()
-    
-    # Public methods
-    # __init__(webpage)
-    # getWebInformationList(cardname) - returns a list
-    
     def __init__(self,webpage):
   
         self.webpage = webpage
@@ -93,23 +81,29 @@ class WebScraperMTG:
             value = value[1:-1]
             self.price_list.append(value)
     
-     #           self.daily_change_list = []
-     #     for j in range(1,size,3):
-     #               value = price_list[j]
-     #             value = value[1:-1]
-     #      self.daily_change_list.append(value)
-     #    newSize = int(len(self.daily_change_list))
-     #       self.daily_change_list = self.daily_change_list[0:newSize]
-     #      print(newSize)
-     #       print(self.daily_change_list)      
+            #   self.daily_change_list = []
+            #    for j in range(1,size,3):
+             #     value = price_list[j]
+             #  value = value[1:-1]
+             # self.daily_change_list.append(value)
+             #   newSize = int(len(self.daily_change_list))
+             # self.daily_change_list = self.daily_change_list[0:newSize]
+              #    print(newSize)
+             #  print(self.daily_change_list)      
         
-     #    self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1]
-     #        self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
-     #    self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
+             # self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1
+             # self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
+             #  self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
 
-    #def getWebInformationList(self,cardname):
-    #def getWebPriceList(self):
-     #   return self.price_list
+    def getWebInformationList(self,cardname):
+    	
+    	# go through self.card_list using while loop and keeping track of index
+    	# until you find cardname in self.card_list
+
+     	# go to same index in the self.price_list and add that value to list that will be returned
+     	webCardInfo_list = []
+     	my_price = self.price_list[index]
+     	return webCardInfo_list
 
 class CardSummary:
 
@@ -164,7 +158,13 @@ numRows = oCC.getNumRows(46)
 sheetName = oCC.getSheetName(46)
 cardName = oCC.getCardName(46,1)
 
+oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
+webpageInfo = oWS.getWebInformationList(cardName)
+summaryList = cardInfo + webpageInfo
+summaryList.append(sheetName)
 
+#webpageList = oWS.getWebInformationList(cardName)
+#print("Price List from object: ", priceList)
 oCS = CardSummary()
 i = 1
 #oCS.setHeader()
@@ -172,16 +172,7 @@ for i in range (1, numRows):
     cardInfo = oCC.getAllCardInfo(46, i)
     oCS.writeSummaryRow(cardInfo,numRows)
    
-    
 
-
-
-#webpageInfo = oWS.getWebInformationList(cardName)
-#summaryList = cardInfo + webpageInfo
-#summaryList.append(sheetName)
-#oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
-#priceList = oWS.getWebPriceList()
-#print("Price List from object: ", priceList)
 
 print('Total number of SHEETS in this file is: ', numSheets)
 print('Total number of ROWS in this sheet is: ',numRows)
