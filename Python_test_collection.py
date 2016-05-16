@@ -16,7 +16,6 @@ class CardCollection:
         self.sourceWorkbook = xlrd.open_workbook(self.collectionFile) 
         
     def getNumSheets(self):
-        # delete when member variable self.collection created 
         numb_sheets = self.sourceWorkbook.nsheets
         return numb_sheets
 
@@ -49,30 +48,30 @@ class CardCollection:
         cardInfo.append(my_sheet.cell(rowIndex,11).value)
         #print( 'the list of cardinfo:  ', cardInfo)
         return cardInfo
-      
+    #def isFoil(self, sheetIndex, rowIndex):
+        # if  foild colum is Y otherwise return FALSE 
+        #return True 
 class WebScraperMTG:
-    
     def __init__(self,webpage):
-  
+
         self.webpage = webpage
         self.price_list = []
         self.card_list = []
         self.setInformationLists() 
-
+            
     def setInformationLists(self):
 
         page = requests.get(self.webpage)
+
         #below will pars the contents with lxml
         tree = html.fromstring(page.content)
         #below will select elements we need-return a list of elements
         card_list = tree.xpath('//a[@data-full-image]/text()')
-
         size = int(len(card_list) / 2)
         self.card_list = card_list[0:size]
         #print("card list ", self.card_list)
-        
+            
         price_list = tree.xpath('//td[@class="text-right"]/text()')
-
         price_list = [x for x in price_list if x != '\n']
         size = int(len(price_list)/2)
         self.price_list = []
@@ -80,39 +79,38 @@ class WebScraperMTG:
             value = price_list[i]
             value = value[1:-1]
             self.price_list.append(value)
-            #print("price list",self.price_list)
-            #  self.daily_change_list = []
-            #  for j in range(1,size,3):
-            # value = price_list[j]
-            #  value = value[1:-1]
-            # self.daily_change_list.append(value)
-            #   newSize = int(len(self.daily_change_list))
-            # self.daily_change_list = self.daily_change_list[0:newSize]
-            #    print(newSize)
-            #  print(self.daily_change_list)     
-            # self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1
-            # self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
-            #  self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
-
+                #print("price list",self.price_list)
+                #  self.daily_change_list = []
+                #  for j in range(1,size,3):
+                # value = price_list[j]
+                #  value = value[1:-1]
+                # self.daily_change_list.append(value)
+                #   newSize = int(len(self.daily_change_list))
+                # self.daily_change_list = self.daily_change_list[0:newSize]
+                #    print(newSize)
+                #  print(self.daily_change_list)     
+                # self.weekly_change_list = [] for k in range(2,size,3):     value = price_list[j]     value = value[1:-1
+                # self.weekly_change_list.append(value) newSize = int(len(self.weekly_change_list)) self.weekly_change_list =
+                #  self.weekly_change_list[0:newSize] print(newSize) print(self.weekly_change_list)
     def getWebInformationList(self,cardName):
 
         index = 0
-        print ('cardName inside getWebInformationList' , cardName)
+        #print ('cardName inside getWebInformationList' , cardName)
         card_price = "Not Found"
-        cardFound = "FALSE"
+        cardFound = False
         lengthOfCard_list = len(self.card_list)
-        while (index < lengthOfCard_list) and (cardFound == "FALSE") :
+        while (index < lengthOfCard_list) and not(cardFound) :
             if cardName == self.card_list[index] :
                 card_price = self.price_list[index]
                 print ('the index for the  cardname you are looking for is: ', index)
-                cardFound = "TRUE"
+                cardFound = True
             index += 1
      
         print ('card price found for this card: ', card_price)
         return card_price
 
 class CardSummary:
-
+    # this class will get all information needed for the cards and write those in new excel sheet.
     def __init__(self):
         self.currentrow = 1	
         self.setHeader()
@@ -156,35 +154,48 @@ class CardSummary:
 
 # Card Collection Test Suite  ---implement the test suite with nose
 
-sheetIndex = 46
+#sheetIndex = 46
+#sheetIndex =0
 rowIndex = 1
 oCC = CardCollection('/Users/mity/mypy/MTG_Collection_4_20_16.xlsx')
-oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
-oCS = CardSummary()
 
-numSheets = oCC.getNumSheets()
-numRows = oCC.getNumRows(sheetIndex)
-sheetName = oCC.getSheetName(sheetIndex)
-
-
-for rowIndex in range (1,numRows): 
+for sheetIndex in range(44,48):
+    sheetName = oCC.getSheetName(sheetIndex)
+    url ="http://www.mtggoldfish.com/%s" % "index/"+sheetName+"#paper"
     
-    cardInfo = oCC.getAllCardInfo(sheetIndex,rowIndex)
-    cardName = oCC.getCardName(sheetIndex,rowIndex)
+    print (url)
 
-    online_price = oWS.getWebInformationList(cardName)
- 
-    cardInfo.append(online_price)
-    cardInfo.append(sheetName)
-    oCS.writeSummaryRow(cardInfo,numRows)
+    oWS = WebScraperMTG(url)
+    #oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
+    
+    oCS = CardSummary()
+    numSheets = oCC.getNumSheets()
+    #print(numSheets)
+    # used 3 but later needs to be changed to numSheets
+    #for sheetIndex in range(1,3):
+    numRows = oCC.getNumRows(sheetIndex)
+    #sheetName = oCC.getSheetName(sheetIndex)
+        # change below to numRows
+    for rowIndex in range (1,numRows): 
+        
+        cardInfo = oCC.getAllCardInfo(sheetIndex,rowIndex)
+        cardName = oCC.getCardName(sheetIndex,rowIndex)
+
+        online_price = oWS.getWebInformationList(cardName)
+        # in future to get foil price ,add getWebInformationListfoil(cardName) 
+        #o create if ...
+        cardInfo.append(online_price)
+        cardInfo.append(sheetName)
+            #change bellow to numRows
+        oCS.writeSummaryRow(cardInfo,5)
 
 
 #print('Total number of SHEETS in this file is: ', numSheets)
 #print('Total number of ROWS in this sheet is: ',numRows)
-print('The SHEET NAME found is: ',sheetName)
-print('The CARD NAME is:',cardName)
-print('The list of all required information is: ', cardInfo)
-print("card price" , online_price)
+# print('The SHEET NAME found is: ',sheetName)
+# print('The CARD NAME is:',cardName)
+# print('The list of all required information is: ', cardInfo)
+# print("card price" , online_price)
 
 
 
