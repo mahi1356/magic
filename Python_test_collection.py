@@ -113,13 +113,15 @@ class CardSummary:
     # this class will get all information needed for the cards and write those in new excel sheet.
     def __init__(self):
         self.currentrow = 1	
+        self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        self.currentsheet = self.open_workbook.active 
         self.setHeader()
 
     def setHeader(self):
 
         header_list = ['Card name','Color','Rarity','Foil','Special','Number','Location','Price','Sheet Name']
-        self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        self.currentsheet = self.open_workbook.active 
+        #self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        #self.currentsheet = self.open_workbook.active 
         c = 1
         # item is an actual value of the element inside the list and NOT a pointercol =  - lesson learned from how loop work for lists
         for item in header_list:
@@ -128,10 +130,10 @@ class CardSummary:
         self.open_workbook.save('final_magic.xlsx') 
         self.currentrow += 1
 
-    def writeSummaryRow(self,cardInfo ,numRows ):
+    def writeSummaryRow(self,cardInfo):
         c = 1
-        self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        self.currentsheet = self.open_workbook.active
+        #self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
+        #self.currentsheet = self.open_workbook.active
 
         for item in cardInfo:
             
@@ -152,24 +154,28 @@ class CardSummary:
         #new_workbook.close()
         #print('Card saved to new excel file')
 
-# Card Collection Test Suite  ---implement the test suite with nose
+#Card Collection Test Suite  ---implement the test suite with nose
 
 #sheetIndex = 46
 #sheetIndex =0
+#from magiclib import *
+
+
 rowIndex = 1
 oCC = CardCollection('/Users/mity/mypy/MTG_Collection_4_20_16.xlsx')
+oCS = CardSummary()
 
 for sheetIndex in range(44,48):
     sheetName = oCC.getSheetName(sheetIndex)
     url ="http://www.mtggoldfish.com/%s" % "index/"+sheetName+"#paper"
     
-    print (url)
+    print ("-----------",url,"----------")
 
     oWS = WebScraperMTG(url)
     #oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
+    print ('OWS is fine')
     
-    oCS = CardSummary()
-    numSheets = oCC.getNumSheets()
+    #numSheets = oCC.getNumSheets()
     #print(numSheets)
     # used 3 but later needs to be changed to numSheets
     #for sheetIndex in range(1,3):
@@ -186,8 +192,7 @@ for sheetIndex in range(44,48):
         #o create if ...
         cardInfo.append(online_price)
         cardInfo.append(sheetName)
-            #change bellow to numRows
-        oCS.writeSummaryRow(cardInfo,5)
+        oCS.writeSummaryRow(cardInfo)
 
 
 #print('Total number of SHEETS in this file is: ', numSheets)
