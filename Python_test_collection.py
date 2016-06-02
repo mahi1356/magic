@@ -21,7 +21,7 @@ class CardCollection:
 
     def getNumRows(self, sheetIndex):
         sheet_dest = self.sourceWorkbook.sheet_by_index(sheetIndex)
-        numb_rows = sheet_dest.nrows - 1
+        numb_rows = sheet_dest.nrows
         return numb_rows
 
     def getSheetName(self,sheetIndex):
@@ -114,68 +114,50 @@ class CardSummary:
     def __init__(self):
         self.currentrow = 1	
         self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        self.currentsheet = self.open_workbook.active 
+        self.currentsheet = self.open_workbook.active
         self.setHeader()
 
     def setHeader(self):
 
         header_list = ['Card name','Color','Rarity','Foil','Special','Number','Location','Price','Sheet Name']
-        #self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        #self.currentsheet = self.open_workbook.active 
         c = 1
         # item is an actual value of the element inside the list and NOT a pointercol =  - lesson learned from how loop work for lists
         for item in header_list:
             self.currentsheet.cell(row= self.currentrow,column=c).value = item
             c += 1
-        self.open_workbook.save('final_magic.xlsx') 
         self.currentrow += 1
 
-    def writeSummaryRow(self,cardInfo):
+    def writeSummaryRow(self,cardInfo ,numRows ):
         c = 1
-        #self.open_workbook = openpyxl.load_workbook('final_magic.xlsx')
-        #self.currentsheet = self.open_workbook.active
 
         for item in cardInfo:
             
             self.currentsheet.cell(row= self.currentrow,column=c).value = item
             c += 1    
-            self.open_workbook.save('final_magic.xlsx') 
         self.currentrow += 1
-    #def saveCardInfo(self): #needs to be adjusted
-       
-        #new_workbook = xlsxwriter.Workbook('final_magic.xlsx')
-        # add one sheet and assign a name-only once
-        #new_sheet = new_workbook.add_worksheet('NewZen')
-        
-        #i = 0
-        #for item in cardInfo:
-        #    xwrite = new_sheet.write(1,i,cardInfo[i])
-        #    i += 1
-        #new_workbook.close()
-        #print('Card saved to new excel file')
 
-#Card Collection Test Suite  ---implement the test suite with nose
+    def saveCardInfo(self): #needs to be adjusted
+        self.open_workbook.save('final_magic.xlsx')
+       
+
+# Card Collection Test Suite  ---implement the test suite with nose
 
 #sheetIndex = 46
 #sheetIndex =0
-#from magiclib import *
-
-
 rowIndex = 1
-oCC = CardCollection('/Users/mity/mypy/MTG_Collection_4_20_16.xlsx')
+oCC = CardCollection('/home/robert/Python/Magic/MTG_Collection_5_14_16.xlsx')
 oCS = CardSummary()
 
-for sheetIndex in range(44,48):
+for sheetIndex in range(1,67):
     sheetName = oCC.getSheetName(sheetIndex)
     url ="http://www.mtggoldfish.com/%s" % "index/"+sheetName+"#paper"
     
-    print ("-----------",url,"----------")
+    print (url)
 
     oWS = WebScraperMTG(url)
     #oWS = WebScraperMTG('http://www.mtggoldfish.com/index/ZEN#paper')
-    print ('OWS is fine')
     
-    #numSheets = oCC.getNumSheets()
+    numSheets = oCC.getNumSheets()
     #print(numSheets)
     # used 3 but later needs to be changed to numSheets
     #for sheetIndex in range(1,3):
@@ -192,9 +174,10 @@ for sheetIndex in range(44,48):
         #o create if ...
         cardInfo.append(online_price)
         cardInfo.append(sheetName)
-        oCS.writeSummaryRow(cardInfo)
+            #change bellow to numRows
+        oCS.writeSummaryRow(cardInfo,rowIndex)
 
-
+oCS.saveCardInfo()
 #print('Total number of SHEETS in this file is: ', numSheets)
 #print('Total number of ROWS in this sheet is: ',numRows)
 # print('The SHEET NAME found is: ',sheetName)
